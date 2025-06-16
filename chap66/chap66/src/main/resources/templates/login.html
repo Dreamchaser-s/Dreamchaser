@@ -1,0 +1,39 @@
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<head>
+			<meta charset ="utf-8">
+			<title>login page</title>
+			<style>
+				th{
+					background-color: green;
+				}
+			</style>
+		</head>
+	</head>
+	<body>
+		<center>
+		<h1>login  </h1><hr>
+		<form action="login" method="post">
+			<table border=1 cellspacing="0" cellpadding="0">
+				<tr>
+					<th>id</th>
+					<td><input name="id" type="text" size=10></td>
+				</tr>
+				<tr>
+					<th>pw</th>
+					<td><input name="password" type="password" size=10></td>
+				</tr>
+				<tr>
+					<td colspan="2" align ="center">
+						<input type="submit" value ="login">
+					</td>
+				</tr>
+			</table>			
+		</form>
+		
+		<p><a th:href="@{/getBoardList}">글목록 바로가기</a></p>
+		<p><a th:href="@{/loginview}">로그인</a></p>
+		
+	</center>
+	</body>
+</html>

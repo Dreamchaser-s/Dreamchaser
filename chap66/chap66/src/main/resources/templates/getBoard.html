@@ -1,0 +1,40 @@
+<html xmlns:th="http://www.thymeleaf.org">
+ <head></head>
+ <body th:align="center">
+  <h1>게시글 상세</h1>
+      <a th:href ="@{/logout}">LOGOUT</a>
+  
+  
+	<form th:action="@{updateBoard}" method="post">
+      <input name="seq" type="hidden" th:value="${board.seq}"> 	      
+	 <table th:align="center" border="1" th:cellpadding="0"	th:cellspacing="0">				
+	   <tr><td bgcolor="yellow" th:text="제목"></td>
+		   <td><input name="title" type="text"
+			          th:text="${board.title}"></td></tr>
+	   <tr><td bgcolor="yellow" th:text="작성자"></td>
+		
+		<!--  주석
+		   <td th:text="${board.writer}"></td>-->
+		   
+		   
+	   </tr>
+	   <tr><td bgcolor="yellow" th:text="내용">
+		   <td><textarea name="content" 
+			    th:text="${board.content}" cols="40" rows="10">			
+		       </textarea></td></tr>
+	   <tr><td bgcolor="yellow" th:text="등록일"></td>
+		   <td th:text="${#dates.format(board.createDate,'yyyy-MM-dd')}">
+		   </td></tr>
+	   <tr><td bgcolor="yellow" th:text="조회수"></td>
+		   <td th:text="${board.cnt}"></td></tr>
+	   <tr><td colspan="2" align="center">
+		   <input type="submit" value="게시글 수정"></td></tr>
+     </table>
+   </form> 
+   <a th:href="@{/insertBoard}">글등록</a>&nbsp;&nbsp;&nbsp; 
+   |&nbsp;<a th:href="@{/getBoardList}">글목록</a>
+   |&nbsp;   
+    <a  th:if="${session['user'].role=='role_admin'}"
+       th:href="@{/deleteBoard(seq=${board.seq})}">글삭제</a>
+</body>
+</html>

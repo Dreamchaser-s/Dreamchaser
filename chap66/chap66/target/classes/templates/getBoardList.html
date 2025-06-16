@@ -1,0 +1,46 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>글 목록</title>
+	<style>
+		th{	background-color:pink;
+			font-size: 24px;		}
+		td{	text-align: center;	}
+		span{
+			color:blue;
+			font-size: 24px;
+		}
+	</style></head>
+<body>
+	<center>
+		<h1>게시글 목록--타임리프문법</h1>
+		   <h3><span th:text ="${session['user'].name}"></span> 
+			님 방문을 환영합니다.</h3>
+			<a th:href ="@{/logout}">LOGOUT</a>
+		
+		<table border="1" cellpadding="0" cellspacing="0" width="700">
+			<tr>
+				<th  width="100">번호</th>
+				<th  width="200">제목</th>
+				<th  width="150">작성자</th>
+				<th  width="200">내용</th>
+				<th  width="450">등록일</th>
+				<th  width="150">조회수</th>
+			</tr> 
+			<tr th:each="board:${boardList}">
+            	<td th:text = "${board.seq}" />	           
+				<td><a th:href="@{/getBoard(seq=${board.seq})}"
+					   th:text = "${board.title}">
+					</a></td>
+					<!--
+				<td th:text = "${board.writer}"/>
+				<td th:text ="${board.member.name}"></td>-->
+				<td></td>
+				<td th:text = "${board.content}"/>
+				<td th:text = "${#dates.format(board.createDate,
+					                          'yyyy-MM-dd')}"/>
+				<td th:text = "${board.cnt}"/>
+             </tr>  
+         </table><br>
+       <a th:href="@{/insertBoard}">새글 등록</a>
+    </center>
+ </body>
+</html>
