@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<aside class="sidebar" th:fragment="sidebarFragment">
+    <nav class="category-nav">
+        <a th:href="@{/post/list}" class="main-category all-view">전체 리뷰 보기</a>
+
+        <div th:each="group : ${groupedCategories.keySet()}">
+            <h3 class="main-category" th:text="${group}"></h3>
+            <ul class="sub-category-list">
+                <li th:each="cat : ${groupedCategories.get(group)}">
+                    <a th:href="@{/post/list/by_category(category=${cat.name()})}"
+                       th:text="${cat.displayName}"></a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</aside>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Tech Log - 회원가입</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="form-wrapper">
+    <div class="form-container" style="max-width: 480px;">
+        <h1 style="font-size: 2rem; font-weight: 800; text-align: center; margin-bottom: 2rem;">Tech Log 회원가입</h1>
+
+        <form th:action="@{/user/signup}" method="post" th:object="${userCreateForm}">
+            <div th:if="${#fields.hasGlobalErrors()}" class="alert-danger">
+                <p th:each="err : ${#fields.globalErrors()}" th:text="${err}"></p>
+            </div>
+
+            <div class="form-group">
+                <label for="username">아이디</label>
+                <input type="text" id="username" th:field="*{username}" class="form-control">
+                <div class="field-error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+            </div>
+            <div class="form-group">
+                <label for="password">비밀번호</label>
+                <input type="password" id="password" th:field="*{password}" class="form-control">
+                <div class="field-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+            </div>
+            <div class="form-group">
+                <label for="passwordConfirm">비밀번호 확인</label>
+                <input type="password" id="passwordConfirm" th:field="*{passwordConfirm}" class="form-control">
+                <div class="field-error" th:if="${#fields.hasErrors('passwordConfirm')}" th:errors="*{passwordConfirm}"></div>
+            </div>
+            <div class="form-group">
+                <label for="nickname">닉네임</label>
+                <input type="text" id="nickname" th:field="*{nickname}" class="form-control">
+                <div class="field-error" th:if="${#fields.hasErrors('nickname')}" th:errors="*{nickname}"></div>
+            </div>
+
+            <div class="form-actions" style="margin-top: 2rem;">
+                <button type="submit" class="btn" style="width: 100%;">가입하기</button>
+            </div>
+        </form>
+    </div>
+</div>
+<style> .alert-danger, .field-error { color: #dc3545; font-size: 0.9rem; margin-top: 0.25rem; } .alert-danger { background-color: #f8d7da; border-color: #f5c6cb; padding: .75rem 1.25rem; margin-bottom: 1rem; border: 1px solid transparent; border-radius: .25rem; } .form-wrapper { display: flex; align-items: center; justify-content: center; min-height: 100vh; background-color: #f8f9fa; } </style>
+</body>
+</html>

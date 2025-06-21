@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${isSearch ? pageTitle : '전체 리뷰'} + ' - Tech Log'"></title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+</head>
+<body>
+<nav class="navbar" th:replace="~{main :: navbar}"></nav>
+
+<div class="main-layout">
+    <aside th:replace="~{fragments/_sidebar :: sidebarFragment}"></aside>
+
+    <main class="main-content">
+        <div class="container">
+            <section class="featured-reviews" th:if="${!isSearch and !recentList.isEmpty()}">
+                <h2 class="section-title">🔥 따끈따끈한 최신 리뷰</h2>
+                <div class="post-grid">
+                    <a th:href="@{|/post/detail/${p.id}|}" class="post-card" th:each="p : ${recentList}">
+                        <div class="post-card-image"
+                             th:if="${p.imageUrl != null and !p.imageUrl.isEmpty()}"
+                             th:style="|background-image: url('@{/uploads/{img}(img=${p.imageUrl})}')|"></div>
+                        <div class="post-card-image"
+                             th:unless="${p.imageUrl != null and !p.imageUrl.isEmpty()}"
+                             style="background-color: #f0f0f0;"></div>
+                        <div class="post-card-content">
+                            <span class="post-card-category" th:text="${p.category.displayName ?: '미지정'}"></span>
+                            <h3 class="post-card-title" th:text="${p.title}"></h3>
+                            <p class="post-card-summary" th:text="${p.summary ?: '한줄평이 없습니다.'}"></p>
+                            <div class="post-card-rating" th:text="${'★'.repeat(p.starRating)} + ${'☆'.repeat(5 - p.starRating)}"></div>
+                            <div class="post-card-footer">
+                                <span th:text="${p.author?.nickname}"></span>
+                                <span>·</span>
+                                <span th:text="${#temporals.format(p.createDate, 'yyyy-MM-dd')}"></span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <hr class="divider" style="margin: 3rem 0;">
+            </section>
+
+            <div class="list-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <h1 style="font-size: 2rem; font-weight: 800;" th:text="${isSearch ? pageTitle : '전체 리뷰'}"></h1>
+                <a sec:authorize="isAuthenticated()" th:href="@{/post/create}" class="btn">새 리뷰 작성</a>
+            </div>
+
+            <div class="sort-options">
+                <a th:href="@{/post/list(sortCode='latest')}" th:classappend="${sortCode == 'latest'} ? 'active'">최신순</a>
+                <a th:href="@{/post/list(sortCode='voter_desc')}" th:classappend="${sortCode == 'voter_desc'} ? 'active'">추천 많은 순</a>
+                <a th:href="@{/post/list(sortCode='voter_asc')}" th:classappend="${sortCode == 'voter_asc'} ? 'active'">추천 적은 순</a>
+                <a th:href="@{/post/list(sortCode='view_count_desc')}" th:classappend="${sortCode == 'view_count_desc'} ? 'active'">조회수 많은 순</a>
+                <a th:href="@{/post/list(sortCode='view_count_asc')}" th:classappend="${sortCode == 'view_count_asc'} ? 'active'">조회수 적은 순</a>
+            </div>
+
+            <div th:if="${paging.isEmpty()}" class="text-center" style="padding: 4rem 0;">
+                <p>조건에 맞는 게시글이 없습니다.</p>
+            </div>
+
+            <div class="post-grid" th:unless="${paging.isEmpty()}">
+                <a th:href="@{|/post/detail/${p.id}|}" class="post-card" th:each="p : ${paging.content}">
+                    <div class="post-card-image"
+                         th:if="${p.imageUrl != null and !p.imageUrl.isEmpty()}"
+                         th:style="|background-image: url('@{/uploads/{img}(img=${p.imageUrl})}')|"></div>
+                    <div class="post-card-image"
+                         th:unless="${p.imageUrl != null and !p.imageUrl.isEmpty()}"
+                         style="background-color: #f0f0f0;"></div>
+                    <div class="post-card-content">
+                        <span class="post-card-category" th:text="${p.category.displayName ?: '미지정'}"></span>
+                        <h3 class="post-card-title" th:text="${p.title}"></h3>
+                        <p class="post-card-summary" th:text="${p.summary ?: '한줄평이 없습니다.'}"></p>
+                        <div class="post-card-rating" th:text="${'★'.repeat(p.starRating)} + ${'☆'.repeat(5 - p.starRating)}"></div>
+                        <div class="post-card-footer">
+                            <span th:text="${p.author?.nickname}"></span>
+                            <span>·</span>
+                            <span th:text="${#temporals.format(p.createDate, 'yyyy-MM-dd')}"></span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div th:if="${!paging.isEmpty() && paging.totalPages > 1}" class="pagination justify-content-center" style="margin-top: 2rem;">
+                <ul class="pagination">
+                    <li class="page-item" th:classappend="${!paging.hasPrevious} ? 'disabled'">
+                        <a class="page-link" th:href="@{/post/list(page=${paging.number-1})}">
+                            <span>이전</span>
+                        </a>
+                    </li>
+                    <li th:each="page: ${#numbers.sequence(0, paging.totalPages-1)}"
+                        th:if="${page >= paging.number-2 and page <= paging.number+2}"
+                        th:classappend="${page == paging.number} ? 'active'"
+                        class="page-item">
+                        <a th:text="${page+1}" class="page-link" th:href="@{/post/list(page=${page})}"></a>
+                    </li>
+                    <li class="page-item" th:classappend="${!paging.hasNext} ? 'disabled'">
+                        <a class="page-link" th:href="@{/post/list(page=${paging.number+1})}">
+                            <span>다음</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    feather.replace();
+</script>
+</body>
+</html>

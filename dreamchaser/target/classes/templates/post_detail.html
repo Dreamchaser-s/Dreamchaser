@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="|${post.title} - Tech Log|"></title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+</head>
+<body>
+<nav class="navbar" th:replace="~{main :: navbar}"></nav>
+
+<div class="main-layout">
+    <aside th:replace="~{fragments/_sidebar :: sidebarFragment}"></aside>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="detail-container" th:object="${post}">
+
+                <div class="detail-header">
+                    <div class="detail-category">
+                        <a th:href="@{/post/list/by_category(category=*{category.name()})}" th:text="*{category.displayName}"></a>
+                    </div>
+                    <h1 class="detail-title" th:text="*{title}"></h1>
+                    <p class="detail-summary" th:text="*{summary}"></p>
+                    <div class="detail-rating" th:text="${'★'.repeat(post.starRating)} + ${'☆'.repeat(5 - post.starRating)}"></div>
+                </div>
+                <div class="detail-meta">
+                    <span><i data-feather="user"></i> <span th:text="*{author?.nickname}"></span></span>
+                    <span><i data-feather="calendar"></i> <span th:text="${#temporals.format(post.createDate, 'yyyy-MM-dd')}"></span></span>
+                    <span><i data-feather="eye"></i> <span th:text="*{viewCount}"></span></span>
+                </div>
+                <div class="detail-image" th:if="*{imageUrl != null and !imageUrl.isEmpty()}">
+                    <img th:src="@{|/uploads/*{imageUrl}|}" alt="대표 이미지">
+                </div>
+                <div class="pros-cons-grid">
+                    <div class="pros-box">
+                        <p class="pre-wrap-text" th:text="*{pros}">👍 Pros</p>
+                    </div>
+                    <div class="cons-box">
+                        <p class="pre-wrap-text" th:text="*{cons}">👎 Cons</p>
+                    </div>
+                </div>
+                <div class="detail-content" th:utext="*{content}"></div>
+                <div class="detail-actions">
+                    <a sec:authorize="isAuthenticated()" href="javascript:void(0);"
+                       th:data-uri="@{|/post/vote/${post.id}|}"
+                       class="recommend btn">
+                        <i data-feather="heart"></i> 추천
+                        <span th:text="${#lists.size(post.voter)}"></span>
+                    </a>
+                    <a th:href="@{|/post/modify/${post.id}|}" class="btn btn-secondary"
+                       sec:authorize="isAuthenticated()"
+                       th:if="${post.author?.username == #authentication.name or #authorization.expression('hasRole(''ADMIN'')')}">
+                        수정
+                    </a>
+                    <a href="javascript:void(0);" th:data-uri="@{|/post/delete/${post.id}|}" class="delete btn btn-danger"
+                       sec:authorize="isAuthenticated()"
+                       th:if="${post.author?.username == #authentication.name or #authorization.expression('hasRole(''ADMIN'')')}">
+                        삭제
+                    </a>
+                </div>
+                <div class="list-button-wrapper" style="text-align: center; margin-top: 2rem;">
+                    <a th:href="@{/post/list}" class="btn btn-secondary">리뷰 목록으로</a>
+                </div>
+
+                <hr class="divider">
+
+                <div class="comment-section">
+                    <h3 th:text="|댓글 (${#lists.size(post.commentList)})|"></h3>
+                    <form class="comment-form" th:action="@{|/comment/create/${post.id}|}" method="post"
+                          sec:authorize="isAuthenticated()" th:if="${#lists.size(post.commentList) < 50}">
+                        <textarea name="content" rows="3" placeholder="가이드라인을 위반한 글은 경고없이 삭제됩니다."></textarea>
+                        <div class="comment-form-actions" style="text-align: right; margin-top: 0.5rem;">
+                            <button type="submit" class="btn">댓글 등록</button>
+                        </div>
+                    </form>
+                    <div class="alert-warning" th:if="${#lists.size(post.commentList) >= 50}">
+                        댓글 개수가 50개를 초과하여 더 이상 댓글을 작성할 수 없습니다.
+                    </div>
+
+                    <hr class="divider" th:if="${!post.commentList.isEmpty()}" style="margin: 2rem 0;">
+
+                    <div class="comment-list">
+                        <div th:each="comment : ${post.commentList}" th:if="${comment.parent == null}">
+                            <div th:replace="~{::commentFragment(comment=${comment})}"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<th:block th:fragment="commentFragment(comment)">
+    <div th:id="|comment-${comment.id}|" th:classappend="${comment.parent != null} ? 'reply' : ''" class="comment-thread">
+        <div class="comment">
+            <div class="comment-author">
+                <img th:if="${comment.author.profileImage != null}" th:src="@{|/uploads/${comment.author.profileImage}|}" class="comment-avatar" alt="profile">
+                <th:block th:if="${comment.author.profileImage == null}">
+                    <i data-feather="user-check" th:if="${comment.parent == null}"></i>
+                    <i data-feather="corner-down-right" th:if="${comment.parent != null}"></i>
+                </th:block>
+                <strong th:text="${comment.author.nickname}"></strong>
+                <time th:text="${#temporals.format(comment.createDate, 'yyyy-MM-dd HH:mm')}"></time>
+            </div>
+            <div class="comment-content" th:text="${comment.content}"></div>
+            <div class="comment-actions">
+                <a href="javascript:void(0);" th:onclick="|showReplyForm(this, ${comment.id})|" sec:authorize="isAuthenticated()">답글</a>
+                <a href="javascript:void(0);" th:data-uri="@{|/comment/delete/${comment.id}|}" class="delete small" sec:authorize="isAuthenticated()" th:if="${comment.author?.username == #authentication.name or #authorization.expression('hasRole(''ADMIN'')')}">삭제</a>
+            </div>
+        </div>
+        <div class="reply-list" th:if="${!comment.children.isEmpty()}">
+            <div th:each="child : ${comment.children}" th:replace="~{this :: commentFragment(comment=${child})}"></div>
+        </div>
+    </div>
+</th:block>
+
+<div id="reply-form-template" style="display: none;">
+    <form th:action="@{|/comment/create/${post.id}|}" method="post" class="comment-form reply-form">
+        <input type="hidden" name="parentId" value="">
+        <textarea name="content" rows="3" placeholder="답글을 남겨주세요."></textarea>
+        <div class="reply-form-actions">
+            <button type="button" class="btn btn-secondary btn-sm" onclick="cancelReply(this)">취소</button>
+            <button type="submit" class="btn btn-sm">등록</button>
+        </div>
+    </form>
+</div>
+
+<script type='text/javascript'>
+    // 페이지 로딩 완료 후, 답글이 3개 초과하는 댓글에 '더보기' 버튼 동적 추가
+    document.addEventListener('DOMContentLoaded', function() {
+        // 모든 댓글 쓰레드를 찾음 (최상위, 답글 포함)
+        const allThreads = document.querySelectorAll('.comment-thread');
+
+        allThreads.forEach(thread => {
+            // 각 쓰레드 안의 답글 목록을 찾음
+            const replyList = thread.querySelector('.reply-list');
+            if (replyList) {
+                // 답글 목록의 직계 자식인 답글들만 선택
+                const children = replyList.querySelectorAll(':scope > .comment-thread');
+                if (children.length > 3) {
+                    // 3개 이후의 답글은 일단 숨김
+                    for (let i = 3; i < children.length; i++) {
+                        children[i].style.display = 'none';
+                    }
+                    // '더보기' 버튼 생성 및 추가
+                    const showMoreBtn = document.createElement('a');
+                    showMoreBtn.href = 'javascript:void(0);';
+                    showMoreBtn.className = 'toggle-replies-btn';
+                    showMoreBtn.innerText = '... ' + (children.length - 3) + '개 답글 더보기';
+                    showMoreBtn.onclick = function() { toggleReplies(this); };
+                    replyList.appendChild(showMoreBtn);
+                }
+            }
+        });
+    });
+
+    // 더보기/접기 토글 함수
+    function toggleReplies(buttonElement) {
+        const replyList = buttonElement.parentNode;
+        let isHiding = true; // 현재 숨기는 동작을 할 것인지 여부
+
+        // 버튼을 제외한 자식 요소(답글)들을 순회 (length - 1 까지)
+        for(let i = 3; i < replyList.children.length - 1; i++) {
+            const replyItem = replyList.children[i];
+            if (replyItem.style.display === 'none') {
+                replyItem.style.display = 'block';
+                isHiding = false; // 하나라도 펼쳤으면, 전체 동작은 '펼치기'
+            } else {
+                replyItem.style.display = 'none';
+            }
+        }
+
+        if (isHiding) {
+            buttonElement.innerText = '... ' + (replyList.children.length - 4) + '개 답글 더보기';
+        } else {
+            buttonElement.innerText = '▲ 답글 접기';
+        }
+    }
+
+    // 나머지 추천/삭제/답글 폼 관련 스크립트는 기존과 동일
+    document.addEventListener('click', function(event) {
+        const deleteTarget = event.target.closest('.delete');
+        if (deleteTarget) {
+            if(confirm("정말로 삭제하시겠습니까?")) {
+                location.href = deleteTarget.dataset.uri;
+            }
+        }
+        const recommendTarget = event.target.closest('.recommend');
+        if (recommendTarget) {
+            if(confirm("이 글을 추천하시겠습니까?")) {
+                location.href = recommendTarget.dataset.uri;
+            }
+        }
+    });
+
+    let currentReplyForm = null;
+    function showReplyForm(buttonElement, parentId) {
+        const formTemplate = document.getElementById('reply-form-template');
+        if (!formTemplate) return;
+        const newForm = formTemplate.cloneNode(true);
+        newForm.style.display = 'block';
+        newForm.removeAttribute('id');
+        newForm.querySelector('input[name="parentId"]').value = parentId;
+        if (currentReplyForm && currentReplyForm.parentNode) {
+            currentReplyForm.parentNode.removeChild(currentReplyForm);
+        }
+        const commentThread = buttonElement.closest('.comment-thread, .reply, .comment');
+        if (commentThread) {
+            commentThread.appendChild(newForm);
+        }
+        currentReplyForm = newForm;
+    }
+
+    function cancelReply(cancelButton) {
+        const formWrapper = cancelButton.closest('.comment-form.reply-form').parentNode;
+        if (formWrapper && formWrapper.parentNode) {
+            formWrapper.parentNode.removeChild(formWrapper);
+        }
+        currentReplyForm = null;
+    }
+
+    try {
+        feather.replace();
+    } catch (e) {
+        console.error("Feather Icons failed to load.", e);
+    }
+</script>
+
+</body>
+</html>

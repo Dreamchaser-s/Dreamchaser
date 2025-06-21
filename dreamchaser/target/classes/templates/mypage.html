@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <title>마이페이지 - Tech Log</title>
+  <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+  <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+</head>
+<body>
+<nav class="navbar" th:replace="~{main :: navbar}"></nav>
+
+<div class="container">
+  <h1 class="section-title" style="margin-top: 2rem;">마이페이지</h1>
+
+  <section class="profile-section">
+    <h2>내 정보</h2>
+    <div class="profile-info">
+      <div><strong>닉네임:</strong> <span th:text="${user.nickname}"></span></div>
+      <div><strong>아이디:</strong> <span th:text="${user.username}"></span></div>
+      <div><strong>가입일:</strong> <span th:text="${#temporals.format(user.createDate, 'yyyy-MM-dd')}"></span></div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <section class="activity-section">
+    <h2>내가 작성한 리뷰 <span th:text="|(${#lists.size(postList)})|"></span></h2>
+    <ul class="activity-list">
+      <li th:each="post : ${postList}">
+        <div>
+          <a th:href="@{|/post/detail/${post.id}|}" th:text="${post.title}"></a>
+          <span th:if="${post.status != null and post.status.name() == 'PENDING'}" class="badge bg-secondary" th:text="${post.status.displayName}"></span>
+          <span th:if="${post.status != null and post.status.name() == 'APPROVED'}" class="badge bg-success" th:text="${post.status.displayName}"></span>
+          <span th:if="${post.status != null and post.status.name() == 'REJECTED'}" class="badge bg-danger" th:text="${post.status.displayName}"></span>
+        </div>
+        <span class="activity-date" th:text="${#temporals.format(post.createDate, 'yyyy-MM-dd')}"></span>
+      </li>
+    </ul>
+  </section>
+
+  <hr class="divider">
+
+  <section class="activity-section">
+    <h2>내가 작성한 댓글 <span th:text="|(${#lists.size(commentList)})|"></span></h2>
+    <ul class="activity-list">
+      <li th:each="comment : ${commentList}">
+        <p th:text="${comment.content}"></p>
+        <div class="comment-origin">
+          <a th:href="@{|/post/detail/${comment.post.id}|}">└ 원문 보기</a>
+          <span class="activity-date" th:text="${#temporals.format(comment.createDate, 'yyyy-MM-dd')}"></span>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <div style="text-align: right; margin-top: 2rem; display: flex; justify-content: flex-end; gap: 0.5rem;">
+
+    <a th:href="@{/admin/users}" class="btn btn-dark btn-sm" sec:authorize="hasRole('ADMIN')">사용자 관리</a>
+
+    <a th:href="@{/user/withdraw}" class="btn btn-danger btn-sm">회원 탈퇴</a>
+  </div>
+
+</div>
+
+<script>feather.replace();</script>
+</body>
+</html>

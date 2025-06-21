@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Tech Log - 회원 탈퇴</title>
+  <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="form-wrapper">
+  <div class="form-container" style="max-width: 520px;">
+    <h1 style="font-size: 2rem; font-weight: 800; text-align: center; margin-bottom: 1rem;">회원 탈퇴</h1>
+    <p style="text-align: center; color: var(--secondary-text-color); margin-bottom: 2rem;">
+      회원 탈퇴를 위해 비밀번호를 다시 한번 입력해주세요. <br>
+      <strong style="color: #dc3545;">탈퇴 시 모든 활동 내역(작성한 리뷰, 댓글 등)이 영구적으로 삭제됩니다.</strong>
+    </p>
+
+    <form th:action="@{/user/withdraw}" method="post">
+      <div th:if="${param.error}" class="alert-danger">
+        비밀번호가 일치하지 않습니다.
+      </div>
+
+      <div class="form-group">
+        <label for="password">비밀번호 확인</label>
+        <input type="password" id="password" name="password" class="form-control" required>
+      </div>
+
+      <div class="form-actions" style="margin-top: 2rem; display: flex; gap: 1rem;">
+        <a th:href="@{/user/mypage}" class="btn btn-secondary" style="width: 100%;">취소</a>
+        <button type="submit" class="btn btn-danger" style="width: 100%;">탈퇴하기</button>
+      </div>
+    </form>
+  </div>
+</div>
+<style> .alert-danger { color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; padding: .75rem 1.25rem; margin-bottom: 1rem; border: 1px solid transparent; border-radius: .25rem; } .form-wrapper { display: flex; align-items: center; justify-content: center; min-height: 100vh; background-color: #f8f9fa; } .btn-secondary{background-color: #6c757d; border-color:#6c757d;} .btn-danger{background-color: #dc3545; border-color:#dc3545;}</style>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>사용자 관리 - Tech Log</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+</head>
+<body>
+<nav class="navbar" th:replace="~{main :: navbar}"></nav>
+
+<div class="main-layout">
+    <aside th:replace="~{fragments/_sidebar :: sidebarFragment}"></aside>
+
+    <main class="main-content">
+        <div class="container">
+            <h1 class="section-title">관리자 페이지</h1>
+
+            <div th:replace="~{fragments/_admin_nav :: adminNav(activeTab='users')}"></div>
+
+            <div class="table-responsive" style="margin-top: 1.5rem;">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light text-center">
+                    <tr>
+                        <th>ID</th>
+                        <th>아이디</th>
+                        <th>닉네임</th>
+                        <th>역할</th>
+                        <th>가입일</th>
+                        <th>상태</th>
+                        <th>관리</th>
+                    </tr>
+                    </thead>
+                    <tbody class="text-center">
+                    <tr th:each="user : ${userPaging.content}">
+                        <td th:text="${user.id}"></td>
+                        <td><strong th:text="${user.username}"></strong></td>
+                        <td th:text="${user.nickname}"></td>
+                        <td>
+                            <span th:text="${user.role.displayName}" th:classappend="${user.role.name() == 'ADMIN'} ? 'fw-bold text-danger' : ''"></span>
+                        </td>
+                        <td th:text="${#temporals.format(user.createDate, 'yyyy-MM-dd HH:mm')}"></td>
+                        <td>
+                            <span th:if="${user.permanentlyBanned}" class="badge bg-danger">영구 차단</span>
+                            <span th:if="${user.bannedUntil != null && user.bannedUntil.isAfter(T(java.time.LocalDateTime).now())}"
+                                  th:text="|~ ${#temporals.format(user.bannedUntil, 'MM-dd')} 까지|" class="badge bg-warning text-dark"></span>
+                            <span th:unless="${user.permanentlyBanned or (user.bannedUntil != null && user.bannedUntil.isAfter(T(java.time.LocalDateTime).now()))}"
+                                  class="badge bg-success">정상</span>
+                        </td>
+                        <td>
+                            <div th:if="${user.username != #authentication.name}">
+                                <form th:action="@{|/admin/users/unban/${user.id}|}" method="post"
+                                      th:if="${user.permanentlyBanned or (user.bannedUntil != null && user.bannedUntil.isAfter(T(java.time.LocalDateTime).now()))}">
+                                    <button type="submit" class="btn btn-sm btn-success">해제</button>
+                                </form>
+                                <div th:unless="${user.permanentlyBanned or (user.bannedUntil != null && user.bannedUntil.isAfter(T(java.time.LocalDateTime).now()))}" class="d-flex gap-2 justify-content-center">
+                                    <form th:action="@{|/admin/users/ban/temp/${user.id}|}" method="post">
+                                        <input type="hidden" name="days" value="7">
+                                        <button type="submit" class="btn btn-sm btn-warning">7일</button>
+                                    </form>
+                                    <form th:action="@{|/admin/users/ban/perm/${user.id}|}" method="post">
+                                        <button type="submit" class="btn btn-sm btn-danger">영구</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div th:if="${!userPaging.isEmpty() && userPaging.totalPages > 1}" class="pagination justify-content-center" style="margin-top: 2rem;">
+                <ul class="pagination">
+                    <li class="page-item" th:classappend="${!userPaging.hasPrevious()} ? 'disabled'">
+                        <a class="page-link" th:href="@{/admin/users(page=${userPaging.number - 1})}">이전</a>
+                    </li>
+                    <li th:each="page : ${#numbers.sequence(0, userPaging.totalPages - 1)}"
+                        th:if="${page >= userPaging.number-2 and page <= userPaging.number+2}"
+                        class="page-item" th:classappend="${page == userPaging.number} ? 'active'">
+                        <a class="page-link" th:href="@{/admin/users(page=${page})}" th:text="${page + 1}"></a>
+                    </li>
+                    <li class="page-item" th:classappend="${!userPaging.hasNext()} ? 'disabled'">
+                        <a class="page-link" th:href="@{/admin/users(page=${userPaging.number + 1})}">다음</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

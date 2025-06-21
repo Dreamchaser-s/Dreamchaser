@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<nav class="nav nav-tabs mt-4 mb-4" th:fragment="adminNav(activeTab)">
+    <a class="nav-link" th:classappend="${activeTab == 'users'} ? 'active'" th:href="@{/admin/users}">사용자 관리</a>
+    <a class="nav-link" th:classappend="${activeTab == 'posts'} ? 'active'" th:href="@{/admin/posts/pending}">승인 대기 리뷰</a>
+</nav>
+
+</html>

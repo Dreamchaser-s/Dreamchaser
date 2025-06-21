@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <title>승인 대기 리뷰 - Tech Log</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+</head>
+<body>
+<nav class="navbar" th:replace="~{main :: navbar}"></nav>
+
+<div class="main-layout">
+  <aside th:replace="~{fragments/_sidebar :: sidebarFragment}"></aside>
+
+  <main class="main-content">
+    <div class="container">
+      <h1 class="section-title">관리자 페이지</h1>
+
+      <div th:replace="~{fragments/_admin_nav :: adminNav(activeTab='posts')}"></div>
+
+      <p class="text-muted" style="margin-top: 1.5rem; margin-bottom: 2rem;">게시글 제목을 클릭하여 내용을 확인한 후, 승인 또는 거절할 수 있습니다.</p>
+
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light text-center">
+          <tr>
+            <th>ID</th>
+            <th style="width: 40%;">제목</th>
+            <th>작성자</th>
+            <th>카테고리</th>
+            <th>작성일</th>
+            <th>관리</th>
+          </tr>
+          </thead>
+          <tbody class="text-center">
+          <tr th:if="${pendingPaging.isEmpty()}">
+            <td colspan="6" class="py-5 text-muted">승인 대기 중인 게시글이 없습니다.</td>
+          </tr>
+          <tr th:each="post : ${pendingPaging.content}">
+            <td th:text="${post.id}"></td>
+            <td class="text-start">
+              <a th:href="@{|/post/detail/${post.id}|}" th:text="${post.title}" target="_blank" class="text-decoration-none text-dark fw-bold"></a>
+            </td>
+            <td th:text="${post.author.nickname}"></td>
+            <td th:text="${post.category.displayName}"></td>
+            <td th:text="${#temporals.format(post.createDate, 'yyyy-MM-dd HH:mm')}"></td>
+            <td>
+              <div class="d-flex gap-2 justify-content-center">
+                <form th:action="@{|/admin/posts/approve/${post.id}|}" method="post">
+                  <button type="submit" class="btn btn-sm btn-primary">승인</button>
+                </form>
+                <form th:action="@{|/admin/posts/reject/${post.id}|}" method="post">
+                  <button type="submit" class="btn btn-sm btn-secondary">거절</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div th:if="${!pendingPaging.isEmpty() && pendingPaging.totalPages > 1}" class="pagination justify-content-center" style="margin-top: 2rem;">
+        <ul class="pagination">
+          <li class="page-item" th:classappend="${!pendingPaging.hasPrevious} ? 'disabled'">
+            <a class="page-link" th:href="@{/admin/posts/pending(page=${pendingPaging.number - 1})}">이전</a>
+          </li>
+          <li th:each="page: ${#numbers.sequence(0, pendingPaging.totalPages-1)}"
+              th:if="${page >= pendingPaging.number-2 and page <= pendingPaging.number+2}"
+              th:classappend="${page == pendingPaging.number} ? 'active'"
+              class="page-item">
+            <a th:text="${page+1}" class="page-link" th:href="@{/admin/posts/pending(page=${page})}"></a>
+          </li>
+          <li class="page-item" th:classappend="${!pendingPaging.hasNext} ? 'disabled'">
+            <a class="page-link" th:href="@{/admin/posts/pending(page=${pendingPaging.number+1})}"><span>다음</span></a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </main>
+</div>
+</body>
+</html>

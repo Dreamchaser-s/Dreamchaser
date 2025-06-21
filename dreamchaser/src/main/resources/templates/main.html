@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Tech Log - 솔직한 IT 제품 리뷰</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+</head>
+<body>
+<nav class="navbar" th:fragment="navbar">
+    <a class="navbar-brand" th:href="@{/}">Tech Log</a>
+    <div class="nav-links">
+        <div sec:authorize="isAnonymous()">
+            <a th:href="@{/user/login}">로그인</a>
+            <a th:href="@{/user/signup}">회원가입</a>
+        </div>
+        <div sec:authorize="isAuthenticated()" style="display: flex; align-items: center; gap: 1.5rem;">
+            <a th:href="@{/user/mypage}" style="font-weight: 600;">마이페이지</a>
+            <span class="welcome-user"><strong sec:authentication="name"></strong>님</span>
+            <form th:action="@{/user/logout}" method="post" style="display: inline;">
+                <button type="submit" class="logout-btn">로그아웃</button>
+            </form>
+        </div>
+    </div>
+</nav>
+
+<div class="main-layout">
+    <aside th:replace="~{fragments/_sidebar :: sidebarFragment}"></aside>
+
+    <main class="main-content">
+        <section class="hero">
+            <div class="hero-content">
+                <h1>어떤 IT 제품이 궁금하세요?</h1>
+                <p>Tech Log에서 솔직하고 상세한 리뷰를 찾아보세요.</p>
+                <div class="search-bar">
+                    <form th:action="@{/post/search}" method="get">
+                        <input type="text" name="q" placeholder="제품명, 카테고리 등으로 검색">
+                        <button type="submit"><i data-feather="search"></i></button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <div class="container">
+            <h2 class="section-title">최신 리뷰</h2>
+            <div class="post-grid">
+                <a th:href="@{|/post/detail/${p.id}|}" class="post-card" th:each="p : ${postList}">
+                    <div class="post-card-image"
+                         th:if="${p.imageUrl != null and !p.imageUrl.isEmpty()}"
+                         th:style="|background-image: url('@{/uploads/{img}(img=${p.imageUrl})}')|"></div>
+
+                    <div class="post-card-image"
+                         th:unless="${p.imageUrl != null and !p.imageUrl.isEmpty()}"
+                         style="background-color: #f0f0f0;"></div>
+                    <div class="post-card-content">
+                        <span class="post-card-category" th:text="${p.category.displayName ?: '미지정'}"></span>
+                        <h3 class="post-card-title" th:text="${p.title}"></h3>
+                        <p class="post-card-summary" th:text="${p.summary ?: '한줄평이 없습니다.'}"></p>
+                        <div class="post-card-rating" th:text="${'★'.repeat(p.starRating)} + ${'☆'.repeat(5 - p.starRating)}"></div>
+                        <div class="post-card-footer">
+                            <span th:text="${p.author?.nickname}"></span>
+                            <span>·</span>
+                            <span th:text="${#temporals.format(p.createDate, 'yyyy-MM-dd')}"></span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <section sec:authorize="isAuthenticated()" class="cta-section">
+            <div class="container">
+                <h2>좋은 리뷰는 큰 도움이 될거에요.</h2>
+                <p>당신의 경험을 공유하고 다른 사람들의 선택을 도와주세요.</p>
+                <div class="cta-buttons">
+                    <a th:href="@{/post/list}" class="btn btn-large btn-secondary">리뷰 목록 보기</a>
+                    <a th:href="@{/post/create}" class="btn btn-large">리뷰 쓰러가기</a>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<script>
+    feather.replace();
+</script>
+</body>
+</html>

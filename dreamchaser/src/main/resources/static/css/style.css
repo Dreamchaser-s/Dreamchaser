@@ -1,0 +1,728 @@
+/* Pretendard 폰트 불러오기 */
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
+
+/* CSS 변수를 이용한 색상 팔레트 정의 */
+:root {
+    --bg-color: #FFFFFF;
+    --primary-text-color: #333333;
+    --secondary-text-color: #555555;
+    --border-color: #EAEAEA;
+    --accent-color: #4F46E5;
+    --accent-hover-color: #4338CA;
+    --shadow-color: rgba(0, 0, 0, 0.05);
+}
+
+/* 기본 스타일 리셋 및 전역 폰트/색상 설정 */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--primary-text-color);
+    line-height: 1.6;
+}
+
+a {
+    color: var(--accent-color);
+    text-decoration: none;
+}
+
+/* 기본 레이아웃 컨테이너 */
+.container {
+    max-width: 960px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+/* 네비게이션 바 스타일 (기존 스타일 개선) */
+.navbar {
+    background-color: var(--bg-color);
+    padding: 1rem 2rem;
+    box-shadow: 0 2px 4px var(--shadow-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+}
+.navbar-brand {
+    font-weight: 800;
+    font-size: 1.5rem;
+    color: var(--primary-text-color);
+}
+/* ... 기타 네비게이션 스타일 ... */
+.nav-links a { margin-left: 1.5rem; font-size: 1rem; color: var(--secondary-text-color); text-decoration: none; font-weight: 500; }
+.nav-links .logout-btn { background: none; border: none; color: #dc3545; cursor: pointer; font-size: 1rem; padding: 0; font-weight: 500; font-family: inherit; }
+
+/* 버튼 기본 스타일 */
+.btn {
+    display: inline-block;
+    font-weight: 500;
+    color: #fff;
+    background-color: var(--accent-color);
+    text-align: center;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    border-radius: 6px;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.2s;
+}
+.btn:hover {
+    background-color: var(--accent-hover-color);
+}
+
+/* --- 게시글 카드 그리드 스타일 --- */
+.post-grid {
+    display: grid;
+    /* 화면 크기에 따라 2~3개의 카드가 보이도록 반응형 설정 */
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.post-card {
+    background-color: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden; /* 카드의 둥근 모서리 밖으로 이미지가 삐져나가지 않도록 */
+    text-decoration: none;
+    color: var(--primary-text-color);
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    display: flex;
+    flex-direction: column;
+}
+
+.post-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 20px var(--shadow-color);
+}
+
+.post-card-image {
+    width: 100%;
+    /* 이미지 비율을 16:9로 유지 */
+    padding-top: 56.25%;
+    background-size: cover;
+    background-position: center;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.post-card-content {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; /* 카드의 높이가 달라도 푸터가 아래에 붙도록 */
+}
+
+.post-card-category {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--accent-color);
+    margin-bottom: 0.5rem;
+}
+
+.post-card-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.post-card-summary {
+    font-size: 0.9rem;
+    color: var(--secondary-text-color);
+    flex-grow: 1; /* 이 요소가 남는 공간을 모두 차지 */
+    margin-bottom: 1rem;
+}
+
+.post-card-rating {
+    color: #FBBF24; /* 별점 색상 (노란색 계열) */
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+}
+
+.post-card-footer {
+    font-size: 0.8rem;
+    color: var(--secondary-text-color);
+    border-top: 1px solid var(--border-color);
+    padding-top: 0.75rem;
+    margin-top: auto; /* 푸터를 카드 하단에 고정 */
+}
+
+/* --- 게시글 상세 페이지 스타일 --- */
+.detail-container {
+    max-width: 768px; /* 본문 가독성을 위해 목록보다 너비를 살짝 줄임 */
+    margin: 2rem auto;
+}
+
+.detail-header {
+    margin-bottom: 2rem;
+}
+.detail-category {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--accent-color);
+    margin-bottom: 0.5rem;
+}
+.detail-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    line-height: 1.3;
+    margin-bottom: 1rem;
+}
+.detail-summary {
+    font-size: 1.1rem;
+    color: var(--secondary-text-color);
+    margin-bottom: 1rem;
+}
+.detail-rating {
+    color: #FBBF24;
+    font-size: 1.2rem;
+}
+
+.detail-meta {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    font-size: 0.9rem;
+    color: var(--secondary-text-color);
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 2rem;
+}
+.detail-meta span {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+.detail-meta svg {
+    width: 16px;
+    height: 16px;
+}
+
+.detail-image {
+    width: 100%;
+    margin-bottom: 2rem;
+}
+.detail-image img {
+    width: 100%;
+    border-radius: 8px;
+}
+
+.pros-cons-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+.pros-box, .cons-box {
+    padding: 1.5rem;
+    border-radius: 8px;
+}
+.pros-box {
+    background-color: rgba(22, 163, 74, 0.05);
+    border: 1px solid rgba(22, 163, 74, 0.2);
+}
+.cons-box {
+    background-color: rgba(239, 68, 68, 0.05);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+.pros-box h4, .cons-box h4 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+}
+
+.detail-content {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    margin-bottom: 3rem;
+    white-space: pre-wrap; /* 사용자가 엔터(줄바꿈) 친 것을 그대로 보여줌 */
+}
+
+.detail-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+}
+.detail-actions .btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.detail-actions .btn svg {
+    width: 18px;
+    height: 18px;
+}
+.btn-secondary { background-color: #6c757d; }
+.btn-danger { background-color: #dc3545; }
+
+
+hr.divider {
+    border: none;
+    border-top: 1px solid var(--border-color);
+    margin: 3rem 0;
+}
+
+/* --- 댓글 섹션 스타일 --- */
+.comment-section h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+}
+.comment-form textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+}
+.comment-form {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    margin-bottom: 2rem;
+}
+
+.comment {
+    display: grid;
+    grid-template-areas: "author actions" "content content";
+    grid-template-columns: 1fr auto;
+    gap: 0.5rem 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border-color);
+}
+.comment-author { grid-area: author; display: flex; align-items: center; gap: 0.5rem; font-weight: 600; }
+.comment-author svg { width: 18px; height: 18px; }
+.comment-author time { font-size: 0.8rem; color: var(--secondary-text-color); font-weight: 400; }
+.comment-content {
+    grid-area: content;
+    min-width: 0; /* flex/grid 아이템이 줄어들 수 있도록 설정 */
+    word-break: break-word; /* ★★★ 긴 단어나 URL이 있어도 강제로 줄바꿈하여 영역을 벗어나지 않도록 함 ★★★ */
+}
+.comment-actions { grid-area: actions; font-size: 0.8rem; }
+.comment-actions .small { color: var(--secondary-text-color); }
+
+/* --- 글쓰기/수정 폼 스타일 --- */
+.form-container {
+    max-width: 768px;
+    margin: 2rem auto;
+    padding: 2.5rem;
+    background-color: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+}
+.form-container h1 {
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+    font-weight: 800;
+}
+.form-container fieldset {
+    border: none;
+    padding: 0;
+    margin-bottom: 2rem;
+}
+.form-container legend {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+    width: 100%;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+.form-control {
+    display: block;
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--primary-text-color);
+    background-color: #FFF;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+.form-control:focus {
+    color: var(--primary-text-color);
+    background-color: #fff;
+    border-color: var(--accent-color);
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(79, 70, 229, 0.25);
+}
+
+.form-actions {
+    text-align: right;
+    margin-top: 1rem;
+}
+
+/* ★★★ 상호작용형 별점 스타일 ★★★ */
+.star-rating {
+    display: flex;
+    flex-direction: row-reverse; /* 별을 오른쪽부터 채우기 위한 트릭 */
+    justify-content: flex-end;
+}
+.star-rating input[type=radio] {
+    display: none; /* 실제 라디오 버튼은 숨김 */
+}
+.star-rating label {
+    font-size: 2rem;
+    color: #d1d5db; /* 비활성 별 색상 (회색) */
+    cursor: pointer;
+    transition: color 0.2s;
+}
+/* 마우스를 올렸을 때, 해당 별과 그 이전 별들 색상 변경 */
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+    color: #FBBF24;
+}
+/* 라디오 버튼이 체크되었을 때, 해당 별과 그 이전 별들 색상 고정 */
+.star-rating input[type=radio]:checked ~ label {
+    color: #FBBF24;
+}
+
+/* --- 메인 페이지 (시작 페이지) 스타일 --- */
+.hero {
+    padding: 6rem 1rem;
+    text-align: center;
+    background-color: #f8f9fa; /* 연한 회색 배경 */
+    border-bottom: 1px solid var(--border-color);
+}
+.hero-content h1 {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+}
+.hero-content p {
+    font-size: 1.2rem;
+    color: var(--secondary-text-color);
+    margin-bottom: 2.5rem;
+}
+
+.search-bar {
+    max-width: 600px;
+    margin: 0 auto;
+    position: relative;
+}
+.search-bar input {
+    width: 100%;
+    height: 56px;
+    padding: 0 4rem 0 1.5rem;
+    border-radius: 28px; /* 타원형 모양 */
+    border: 1px solid var(--border-color);
+    font-size: 1.1rem;
+    transition: box-shadow 0.2s;
+}
+.search-bar input:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.2);
+    border-color: var(--accent-color);
+}
+.search-bar button {
+    position: absolute;
+    right: 6px;
+    top: 6px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: none;
+    background-color: var(--accent-color);
+    color: white;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.2s;
+}
+.search-bar button:hover {
+    background-color: var(--accent-hover-color);
+}
+
+.section-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    margin-top: 3rem;
+}
+
+/* --- 페이징 스타일 --- */
+.pagination { display: flex; justify-content: center; padding-left: 0; list-style: none; margin-top: 2rem; }
+.page-item { margin: 0 0.25rem; }
+.page-item.disabled .page-link { color: #6c757d; pointer-events: none; background-color: #fff; border-color: #dee2e6; }
+.page-item.active .page-link { z-index: 1; color: #fff; background-color: var(--accent-color); border-color: var(--accent-color); }
+.page-link { position: relative; display: block; padding: 0.5rem 0.75rem; line-height: 1.25; color: var(--accent-color); background-color: #fff; border: 1px solid #dee2e6; text-decoration: none; border-radius: 0.25rem; transition: all .2s; }
+.page-link:hover { color: var(--accent-hover-color); background-color: #e9ecef; border-color: #dee2e6; }
+
+/* --- 리뷰 작성 유도 (CTA) 섹션 스타일 --- */
+.cta-section {
+    background-color: #f8f9fa; /* 메인 페이지 히어로 섹션과 동일한 배경색 */
+    padding: 4rem 1rem;
+    text-align: center;
+    margin-top: 4rem;
+    border-top: 1px solid var(--border-color);
+}
+.cta-section h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+.cta-section p {
+    font-size: 1.1rem;
+    color: var(--secondary-text-color);
+    margin-bottom: 2rem;
+    max-width: 600px; /* 문장이 너무 길어지지 않도록 */
+    margin-left: auto;
+    margin-right: auto;
+}
+.cta-section .btn.btn-large {
+    padding: 0.75rem 2rem; /* 일반 버튼보다 조금 더 크게 */
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+/* --- CTA 버튼 그룹 스타일 --- */
+.cta-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem; /* 버튼 사이의 간격 */
+    align-items: center;
+}
+
+/* --- 보조 버튼(Secondary Button) 스타일 --- */
+.btn.btn-secondary {
+    background-color: var(--bg-color); /* 배경은 흰색 */
+    color: var(--accent-color); /* 글자는 포인트 색상 */
+    border: 1px solid var(--accent-color); /* 테두리 추가 */
+}
+
+.btn.btn-secondary:hover {
+    background-color: rgba(79, 70, 229, 0.05); /* 마우스를 올렸을 때 살짝 색이 들어감 */
+    color: var(--accent-hover-color);
+    border-color: var(--accent-hover-color);
+}
+
+/* --- 섹션 구분선 스타일 (상세 페이지에서 사용한 것 재활용) --- */
+hr.divider {
+    border: none;
+    border-top: 1px solid var(--border-color);
+    margin: 3rem 0; /* 위아래로 넉넉한 여백 */
+}
+
+/* --- 마이페이지 스타일 --- */
+.profile-section, .activity-section {
+    padding: 2rem;
+    background-color: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    margin-bottom: 2rem;
+}
+.profile-section h2, .activity-section h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+.profile-info div {
+    margin-bottom: 0.75rem;
+    font-size: 1.1rem;
+}
+.activity-list {
+    list-style: none;
+    padding: 0;
+}
+.activity-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border-color);
+}
+.activity-list li:last-child {
+    border-bottom: none;
+}
+.activity-list li a {
+    font-weight: 600;
+    color: var(--primary-text-color);
+}
+.activity-list li a:hover {
+    color: var(--accent-color);
+}
+.activity-date {
+    font-size: 0.9rem;
+    color: var(--secondary-text-color);
+}
+.comment-origin {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-top: 0.5rem;
+}
+.comment-origin a {
+    font-size: 0.9rem;
+    font-weight: 400;
+}
+
+/* --- 대댓글 스타일 --- */
+.reply-list {
+    /* 기본 들여쓰기 값을 조금 줄여서 더 많은 답글을 표시할 수 있도록 합니다. */
+    padding-left: 2.5rem; /* margin 대신 padding만 사용하여 누적 공간을 줄임 */
+    border-left: 2px solid var(--border-color);
+    margin-left: 0; /* 기존 margin-left 제거 */
+}
+.comment.reply .comment-author svg {
+    width: 16px;
+    height: 16px;
+    color: var(--secondary-text-color);
+}
+.reply-form {
+    margin-top: 1rem;
+}
+.reply-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+.btn.btn-sm { /* 작은 버튼 스타일 */
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    border-radius: 4px;
+}
+
+/* --- 메인 레이아웃 (사이드바 + 콘텐츠) --- */
+.main-layout {
+    /* 화면 너비가 1280px 이상일 때만 사이드바가 보이도록 설정 */
+    display: grid;
+    /* 사이드바는 240px 고정, 나머지는 메인 콘텐츠 영역 */
+    grid-template-columns: 240px 1fr;
+    gap: 2rem; /* 사이드바와 콘텐츠 사이의 간격 */
+
+    /* 기존 container의 역할을 이 레이아웃이 대신함 */
+    max-width: 1280px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+/* 화면 너비가 1024px 이하일 때는 사이드바를 숨기고 1단 구조로 변경 (모바일 대응) */
+@media (max-width: 1024px) {
+    .main-layout {
+        display: block; /* 그리드 해제 */
+    }
+    .sidebar {
+        display: none; /* 사이드바 숨기기 */
+    }
+}
+/* --- 카테고리 사이드바 스타일 --- */
+.sidebar .category-nav {
+    position: sticky; /* 스크롤을 내려도 사이드바가 상단에 고정됨 */
+    top: 2rem;
+}
+.sidebar .main-category {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 1.5rem 0 0.75rem 0;
+    padding: 0.5rem;
+}
+.sidebar .all-view {
+    display: block;
+    color: var(--accent-color);
+    margin-top: 0;
+    border-radius: 6px;
+    transition: background-color 0.2s;
+}
+.sidebar .all-view:hover {
+    background-color: rgba(79, 70, 229, 0.05);
+}
+
+.sidebar .sub-category-list {
+    list-style: none;
+    padding-left: 0;
+}
+.sidebar .sub-category-list a {
+    display: block;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    color: var(--secondary-text-color);
+    font-size: 0.95rem;
+    transition: background-color 0.2s, color 0.2s;
+}
+.sidebar .sub-category-list a:hover {
+    background-color: #f3f4f6;
+    color: var(--primary-text-color);
+}
+/* 사용자가 입력한 줄바꿈과 공백을 그대로 표시하기 위한 스타일 */
+.pre-wrap-text {
+    white-space: pre-wrap; /* 줄바꿈과 공백을 유지하되, 영역을 넘어가면 자동으로 줄바꿈 */
+    word-break: break-word; /* 긴 영단어나 URL이 영역을 뚫고 나가지 않도록 단어 단위로 줄바꿈 */
+}
+/* --- 게시글 및 에디터 내부 이미지 크기 자동 조절 --- */
+/* .detail-content 내부의 이미지와 .note-editable 내부의 이미지에 모두 적용 */
+.detail-content img,
+.note-editable img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 1.5rem auto;
+    border-radius: 8px;
+    box-shadow: var(--shadow-color) 0px 4px 12px;
+}
+
+/* --- 정렬 옵션 버튼 스타일 --- */
+.sort-options {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap; /* 화면이 좁아지면 줄바꿈 */
+}
+.sort-options a {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 20px; /* 타원형 버튼 */
+    color: var(--secondary-text-color);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+.sort-options a:hover {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+}
+/* 현재 활성화된 정렬 버튼 스타일 */
+.sort-options a.active {
+    background-color: var(--accent-color);
+    color: white;
+    border-color: var(--accent-color);
+}
+
+
+.toggle-replies-btn {
+    display: inline-block;
+    margin-left: 2.5rem;
+    margin-top: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--secondary-text-color);
+    cursor: pointer;
+}
+.toggle-replies-btn:hover {
+    color: var(--accent-color);
+    text-decoration: underline;
+}
